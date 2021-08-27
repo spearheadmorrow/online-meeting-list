@@ -4,6 +4,7 @@ import { Button, FormControl, Select, Stack } from '@chakra-ui/core';
 
 import { ButtonTag } from './ButtonTag';
 import { Search } from './Search';
+import { Textual } from './Textual';
 import { State, Tag } from '../helpers/data';
 
 type Filter = {
@@ -17,6 +18,9 @@ export function Filter({ setSearch, setTimezone, state, toggleTag }: Filter) {
   const [open, setOpen] = useState(false);
   return (
     <Stack spacing={{ xs: 3, md: 6 }}>
+      <FormControl>
+        <Textual></Textual>
+      </FormControl>
       <FormControl>
         <Search search={state.search} setSearch={setSearch} />
       </FormControl>
