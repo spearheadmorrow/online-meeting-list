@@ -1,16 +1,4 @@
-This is a meeting finder designed to list online recovery meetings across a variety of timezones. You can see it in production at the [Online Intergroup of AA](https://aa-intergroup.org/oiaa/meetings/) and elsewhere on the web. There is a demo version at [https://online-meeting-list.netlify.app](https://online-meeting-list.netlify.app).
-
-## Next Steps
-
-- [x] Search working
-- [x] Tags working
-- [x] Timezone picker working
-- [x] Mobile view for filter
-- [x] Highlight search results and active tags
-- [x] Bookmarkable search / tag state
-- [x] No results screen
-- [x] Clear search button
-- [x] Fail gracefully when encountering bad data
+This is a meeting finder designed to list online recovery meetings for the Stockholm-based AA Swenglish group. (https://swenglish.info/)
 
 ## Managing Data
 
