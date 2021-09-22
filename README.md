@@ -79,7 +79,3 @@ JSON should be in the format:
 ## Deployments
 
 The demo is hosted on Netlify. Commits to the `main` branch are automatically built and deployed.
-
-```
-
-```
