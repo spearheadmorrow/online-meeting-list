@@ -10,8 +10,8 @@ This is a meeting finder designed to list online recovery meetings for the Stock
 1. Add environment variables. One option is to create a file called `.env` in your root folder, and add your spreadsheet's URL (when you're in edit mode, not the URL displayed when you publish it to the web):
 
 ```
-REACT_APP_GOOGLE_SHEET="https://docs.google.com/spreadsheets/d/1wER2LP3dT_6_LEQ8fSY1rv2bGzIZ2aaMBi_0Bt1aN3I/edit#gid=0"
-REACT_APP_GOOGLE_API_KEY="9sfjoKsfJukwDZhWs48fhs4fioRsRerEhf8ghs9"
+REACT_APP_GOOGLE_SHEET="add URL to your Google Sheet here"
+REACT_APP_GOOGLE_API_KEY="add key here"
 ```
 
 Or, if you are using a service like [Netlify](https://www.netlify.com), you can skip that step and add these variables directly to your build settings.
