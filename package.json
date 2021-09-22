@@ -1,6 +1,7 @@
 {
   "name": "oiaa",
   "version": "0.1.0",
+  "homepage": "https://swenglish.info/online",
   "private": true,
   "dependencies": {
     "@chakra-ui/core": "^0.8.0",
