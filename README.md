@@ -15,7 +15,10 @@ _Note: The meeting finder is integrated with Sentry.io for error reporting. Sign
 REACT_APP_GOOGLE_SHEET="add URL to your Google Sheet here"
 REACT_APP_GOOGLE_API_KEY="add key here"
 REACT_APP_SENTRY_DSN_URL="add your Sentry URL here"
+REACT_APP_PACKAGE_NAME="copy from your package.json file"
+REACT_APP_PACKAGE_VERSION="copy from your package.json file"
 ```
+  1. The last two variables are needed to tag your release in Sentry.
 
 Or, if you are using a service like [Netlify](https://www.netlify.com), you can skip that step and add these variables directly to your build settings.
 ### Install and Run Locally
@@ -35,6 +38,9 @@ Or, if you are using a service like [Netlify](https://www.netlify.com), you can 
 1. In the project directory, run `git pull`.
 1. Re-run `yarn` in case dependencies were updated.
 
+## TODO
+- set npm pkg name and version programmatically
+- https://docs.sentry.io/product/cli/releases/#creating-releases
 ### Contributing
 
 1. Create an issue that describes the problem you are solving. Screenshots are helpful.
