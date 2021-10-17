@@ -1,3 +1,7 @@
+export const environment = 'production';
+export const releasePkgInfo = `${process.env.REACT_APP_PACKAGE_NAME}@${process.env.REACT_APP_PACKAGE_VERSION}`
+export const sentryDsnUrl = process.env.REACT_APP_SENTRY_DSN_URL;
+
 //don't change this 👇 -- see README.md for help creating an .env file for your app
 const sheetUrl = process.env.REACT_APP_GOOGLE_SHEET
   ? process.env.REACT_APP_GOOGLE_SHEET
@@ -8,8 +12,6 @@ export const dataUrl =
   `https://sheets.googleapis.com/v4/spreadsheets/${
     sheetUrl.split('/')[5]
   }/values/A:ZZ?key=${process.env.REACT_APP_GOOGLE_API_KEY}`;
-
-export const sentryDsnUrl = process.env.REACT_APP_SENTRY_DSN_URL;
 
 //todo internationalize
 export const days = [

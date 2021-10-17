@@ -8,12 +8,14 @@ import { Filter } from './components/Filter';
 import { Loading } from './components/Loading';
 import { Meeting } from './components/Meeting';
 import { NoResults } from './components/NoResults';
-import { dataUrl, sentryDsnUrl, meetingsPerPage } from './helpers/config';
+import { dataUrl, sentryDsnUrl, meetingsPerPage, releasePkgInfo as release, environment } from './helpers/config';
 import { load, State } from './helpers/data';
 import { filter } from './helpers/filter';
 import { setQuery } from './helpers/query';
 
 Sentry.init({
+  release,
+  environment,
   dsn: sentryDsnUrl,
   integrations: [new Integrations.BrowserTracing()],
   tracesSampleRate: 0.7,
