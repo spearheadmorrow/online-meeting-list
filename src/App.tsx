@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { Box, CSSReset, Grid, ThemeProvider, theme } from '@chakra-ui/core';
 import InfiniteScroll from 'react-infinite-scroller';
+import * as Sentry from "@sentry/react";
+import { Integrations } from "@sentry/tracing";
 
 import { Filter } from './components/Filter';
 import { Loading } from './components/Loading';
 import { Meeting } from './components/Meeting';
 import { NoResults } from './components/NoResults';
-import { dataUrl, meetingsPerPage } from './helpers/config';
+import { dataUrl, sentryDsnUrl, meetingsPerPage } from './helpers/config';
 import { load, State } from './helpers/data';
 import { filter } from './helpers/filter';
 import { setQuery } from './helpers/query';
+
+Sentry.init({
+  dsn: sentryDsnUrl,
+  integrations: [new Integrations.BrowserTracing()],
+  tracesSampleRate: 0.7,
+});
 
 export default function App() {
   const [state, setState] = useState<State>({
@@ -42,14 +50,15 @@ export default function App() {
   };
 
   if (state.loading) {
-    //on first render, get data
     fetch(dataUrl)
       .then(result => result.json())
       .then(result => {
         setState(load(result));
+      })
+      .catch(error =>  {
+        Sentry.captureException(error);
       });
   } else {
-    //on subsequent renders, set query string
     setQuery(state);
   }
 

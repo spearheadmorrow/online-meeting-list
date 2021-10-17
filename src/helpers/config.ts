@@ -9,6 +9,8 @@ export const dataUrl =
     sheetUrl.split('/')[5]
   }/values/A:ZZ?key=${process.env.REACT_APP_GOOGLE_API_KEY}`;
 
+export const sentryDsnUrl = process.env.REACT_APP_SENTRY_DSN_URL;
+
 //todo internationalize
 export const days = [
   'Sunday',
