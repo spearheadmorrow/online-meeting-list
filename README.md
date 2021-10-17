@@ -4,6 +4,8 @@ This is a meeting finder designed to list online recovery meetings for the Stock
 
 ### Link Your Data
 
+_Note: The meeting finder is integrated with Sentry.io for error reporting. Sign up for an account on their website and generate a unique DSN URL. You will need it in the step, where you create your environment variables._
+
 1. Get an API Key from the [Google Developers Console](https://console.cloud.google.com) with the Sheets API enabled
 1. Make a copy of [this Google Sheet](https://docs.google.com/spreadsheets/d/1wER2LP3dT_6_LEQ8fSY1rv2bGzIZ2aaMBi_0Bt1aN3I/edit#gid=0)
 1. Open your spreadsheet and set the visibility to "anyone with the link can view"
@@ -12,6 +14,7 @@ This is a meeting finder designed to list online recovery meetings for the Stock
 ```
 REACT_APP_GOOGLE_SHEET="add URL to your Google Sheet here"
 REACT_APP_GOOGLE_API_KEY="add key here"
+REACT_APP_SENTRY_DSN_URL="add your Sentry URL here"
 ```
 
 Or, if you are using a service like [Netlify](https://www.netlify.com), you can skip that step and add these variables directly to your build settings.
