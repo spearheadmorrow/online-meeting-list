@@ -1,4 +1,64 @@
-This is a meeting finder designed to list online recovery meetings for the Stockholm-based AA Swenglish group. (https://swenglish.info/)
+# Online Meeting List
+
+A small, fast React + TypeScript app for listing online recovery meetings. Built with Vite, React 18 and Chakra UI.
+
+## Main Points
+
+- Data source: Google Sheets (default) or a JSON feed
+- Dev: pnpm, Vite (dev server + HMR)
+- Deploy: build static `dist/` files (CI workflow included for S3 + CloudFront)
+
+## Quick start
+
+1. Install dependencies:
+
+```sh
+pnpm install
+```
+
+2. Create a `.env` file at the repo root (or set environment variables in your host). Common keys:
+
+```
+VITE_GOOGLE_SHEET    # optional - Google Sheet URL to read meetings from
+VITE_GOOGLE_API_KEY  # required if using Google Sheets API
+VITE_JSON_URL        # optional - use a JSON feed instead of Google Sheets
+VITE_SENTRY_DSN_URL  # optional - sentry DSN for error reporting
+VITE_PACKAGE_NAME    # optional - used for release tagging
+VITE_PACKAGE_VERSION # optional - used for release tagging
+```
+
+3. Run locally:
+
+```sh
+pnpm dev
+```
+
+### Build and Preview
+
+```sh
+pnpm build
+pnpm preview
+```
+
+### Deployment
+
+- A GitHub Actions workflow (`.github/workflows/deploy-to-s3.yml`) is included to build and sync `dist/` to an S3 bucket and optionally invalidate CloudFront. To use it configure these repository secrets:
+
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_REGION
+  - S3_BUCKET
+  - CLOUDFRONT_DISTRIBUTION_ID (optional)
+
+## Contributing
+
+- See `CONTRIBUTING.md` for development and PR guidelines. Keep changes small and add tests where meaningful.
+
+## License
+
+- Licensed under the MIT License. See `LICENSE` for details.
+
+If you need help mirroring a different meetings source or adapting the feed format, open an issue with a sample payload and expected behavior.
 
 ## How to Set Up Your Local Development Environment
 
@@ -52,10 +112,6 @@ Or, if you are using a service like [Netlify](https://www.netlify.com), you can 
 1. Create a pull request that references the issue. Please name [@joshreisner](https://github.com/joshreisner) as a reviewer.
 
 ## Application Architecture
-
-### Technical Overview
-
-This project is written in [TypeScript](https://www.typescriptlang.org/) and was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). UI elements by [Chakra](https://chakra-ui.com/). Uses [Moment.js](https://momentjs.com) for time conversions and [React Infinite Scroller](https://cassetterocks.github.io/react-infinite-scroller) for rendering performance.
 
 ### Managing Data
 
