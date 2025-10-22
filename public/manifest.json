@@ -1,6 +1,6 @@
 {
-  "short_name": "YPAAs",
-  "name": "YPAA meeting list",
+  "short_name": "online-meetings-list",
+  "name": "online Meetings List",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,7 +18,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "./online-meeting-list",
+  "start_url": "./",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"

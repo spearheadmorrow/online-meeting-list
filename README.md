@@ -134,7 +134,7 @@ The data for the demo in managed in [this Google Sheet](https://docs.google.com/
 If you would prefer to use a custom JSON feed rather than a Google Sheet, you can use the parameter:
 
 ```
-REACT_APP_JSON_URL="https://your-website.org/meetings.json"
+VITE_JSON_URL="https://your-website.org/meetings.json"
 ```
 
 JSON should be in the format:
