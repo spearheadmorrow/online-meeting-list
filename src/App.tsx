@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Grid, ChakraProvider, extendTheme } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroller';
-import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
 
 import { Filter } from './components/Filter';
 import { Loading } from './components/Loading';
@@ -12,22 +10,12 @@ import type { Meeting as MeetingType } from './components/Meeting';
 import { Results } from './components/Results';
 import {
   dataUrl,
-  sentryDsnUrl,
   meetingsPerPage,
-  releasePkgInfo as release,
-  environment
+  releasePkgInfo as release
 } from './helpers/config';
 import { load, State } from './helpers/data';
 import { filter } from './helpers/filter';
 import { setQuery } from './helpers/query';
-
-Sentry.init({
-  release,
-  environment,
-  dsn: sentryDsnUrl,
-  integrations: [new Integrations.BrowserTracing()],
-  tracesSampleRate: 0.7
-});
 
 const InfiniteScrollAny = InfiniteScroll as unknown as any;
 
@@ -65,7 +53,7 @@ export default function App() {
         setState(load(result));
       })
       .catch(error => {
-        Sentry.captureException(error);
+        console.error(error);
       });
   } else {
     setQuery(state);
