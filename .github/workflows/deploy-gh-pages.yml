@@ -1,0 +1,42 @@
+name: Deploy to GitHub Pages (preview + main)
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        types: [opened, reopened, synchronize]
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "18"
+                  cache: "pnpm"
+
+            - name: Install pnpm
+              run: corepack enable && corepack prepare pnpm@latest --activate
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build (relative asset paths)
+              # Use a relative base so previews deployed under subpaths work
+              run: pnpm build -- --base ./
+
+            - name: Deploy to gh-pages
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./dist
+                  publish_branch: gh-pages
+                  # For pull requests publish into a subdirectory so each PR has a preview site
+                  destination_dir: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || '' }}
+                  user_name: github-actions[bot]
+                  user_email: 41898282+github-actions[bot]@users.noreply.github.com
