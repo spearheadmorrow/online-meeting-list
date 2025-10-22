@@ -1,0 +1,67 @@
+name: Build and Deploy to S3
+
+# Required repository secrets:
+# - AWS_ACCESS_KEY_ID
+# - AWS_SECRET_ACCESS_KEY
+# - AWS_REGION (e.g. us-east-1)
+# - S3_BUCKET (bucket name to deploy to)
+# - CLOUDFRONT_DISTRIBUTION_ID (optional, for invalidation)
+
+on:
+    push:
+        branches:
+            - main
+            - refactor/2025-glowup
+    workflow_dispatch: {}
+
+permissions:
+    contents: read
+    id-token: write
+
+jobs:
+    build-and-deploy:
+        name: Build and deploy
+        runs-on: ubuntu-latest
+        env:
+            CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+                  cache: "pnpm"
+
+            - name: Enable Corepack and pnpm
+              run: |
+                  corepack enable
+                  corepack prepare pnpm@latest --activate
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build
+              run: pnpm build
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v2
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Sync to S3
+              env:
+                  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+              run: |
+                  echo "Syncing dist/ to s3://$S3_BUCKET"
+                  aws s3 sync dist/ s3://$S3_BUCKET --delete --acl public-read --follow-symlinks --exclude '.DS_Store'
+
+            - name: Create CloudFront invalidation
+              if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+              run: |
+                  echo "Invalidating CloudFront distribution $CLOUDFRONT_DISTRIBUTION_ID"
+                  aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths '/*'
