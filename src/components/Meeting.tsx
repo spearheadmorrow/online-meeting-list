@@ -5,9 +5,6 @@ import { Highlight } from './Highlight';
 import { Moment } from 'moment-timezone';
 import Linkify from 'react-linkify';
 
-// react-highlight-words and react-linkify ship older React typings that can
-// be incompatible with our current @types/react. Cast them safely to any
-// React component type and use the aliases below.
 const HighlighterAny = Highlighter as unknown as React.ComponentType<any>;
 const LinkifyAny = Linkify as unknown as React.ComponentType<any>;
 

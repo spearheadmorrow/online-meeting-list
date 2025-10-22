@@ -1,8 +1,6 @@
 import { State } from './data';
 
-//set the window query string to match the internal state
 export function setQuery(state: State) {
-  //build query string
   let query: string[] = [];
   Object.keys(state.filters).forEach(key => {
     const checkedValues = state.filters[key].filter(value => value.checked);
@@ -16,7 +14,6 @@ export function setQuery(state: State) {
     }
   });
 
-  //set query string
   window.history.pushState(
     '',
     '',

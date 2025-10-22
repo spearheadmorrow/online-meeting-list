@@ -42,7 +42,6 @@ export function Filter({ setSearch, setTimezone, state, toggleTag }: Filter) {
           <Select
             aria-label="Timezone"
             borderColor="gray.300"
-            // chakra Select uses a built-in icon; to customize you'd pass an Icon component via the icon prop
             onChange={(e: React.FormEvent<HTMLSelectElement>) =>
               setTimezone(e.currentTarget.value)
             }
