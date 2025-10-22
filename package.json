@@ -1,5 +1,5 @@
 {
-  "name": "online-meeting-list",
+  "name": "online-meetings-list",
   "version": "2.0.0",
   "homepage": "https://spearheadmorrow.github.io/online-meeting-list/",
   "author": "spearheadmorrow",
@@ -58,11 +58,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "node scripts/serve-subpath.js /online-meeting-list 5000",
     "test": "echo \"No tests configured for Vite migration.\" && exit 0",
-    "build:gh": "vite build --base /online-meeting-list/",
+    "build:gh": "vite build --base /online-meeting-list/ && mkdir -p build/online-meeting-list && for p in build/*; do if [ \"$p\" = \"build/online-meeting-list\" ]; then continue; fi; mv \"$p\" build/online-meeting-list/; done",
     "predeploy": "pnpm build:gh",
-    "deploy": "gh-pages -d build -r git@github-sm:spearheadmorrow/online-meeting-list.git"
+    "deploy": "gh-pages -d build -r git@github-sm:spearheadmorrow/online-meeting-list.git",
+    "serve:subpath": "node scripts/serve-subpath.js"
   },
   "eslintConfig": {
     "extends": "react-app"
