@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages (preview + main)
 
 on:
-  workflow_dispatch: {}
+    workflow_dispatch: {}
 
 jobs:
     build-and-deploy:
@@ -41,7 +41,7 @@ jobs:
                   publish_dir: ./dist
                   publish_branch: gh-pages
                   # destination_dir left empty for manual runs
-                  destination_dir: ''
+                  destination_dir: ""
                   user_name: github-actions[bot]
                   user_email: 41898282+github-actions[bot]@users.noreply.github.com
 
