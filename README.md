@@ -12,25 +12,27 @@ _Note: The meeting finder is integrated with Sentry.io for error reporting. Sign
 1. Add environment variables. One option is to create a file called `.env` in your root folder, and add your spreadsheet's URL (when you're in edit mode, not the URL displayed when you publish it to the web):
 
 ```
-REACT_APP_GOOGLE_SHEET="add URL to your Google Sheet here"
-REACT_APP_GOOGLE_API_KEY="add key here"
-REACT_APP_SENTRY_DSN_URL="add your Sentry URL here"
-REACT_APP_PACKAGE_NAME="copy from your package.json file"
-REACT_APP_PACKAGE_VERSION="copy from your package.json file"
+VITE_GOOGLE_SHEET="add URL to your Google Sheet here"
+VITE_GOOGLE_API_KEY="add key here"
+VITE_SENTRY_DSN_URL="add your Sentry URL here"
+VITE_PACKAGE_NAME="copy from your package.json file"
+VITE_PACKAGE_VERSION="copy from your package.json file"
 ```
-  1. The last two variables are needed to tag your release in Sentry.
+
+1. The last two variables are needed to tag your release in Sentry.
 
 Or, if you are using a service like [Netlify](https://www.netlify.com), you can skip that step and add these variables directly to your build settings.
+
 ### Install and Run Locally
 
 1. Clone this repository.
-1. In the project directory, run `yarn` once to install the dependencies.
-1. Run `yarn start` to start the app in development mode.
+1. In the project directory, run `pnpm install` (or `yarn`/`npm install`) once to install the dependencies.
+1. Run `pnpm dev` to start the app in development mode.
 
 ### Deploy to your Website
 
-1. In the project directory, run `yarn build`.
-2. Create an archive (ZIP file) of the generated `build` directory.
+1. In the project directory, run `pnpm build`.
+2. Create an archive (ZIP file) of the generated `dist` directory.
 3. Send to Swenglish IT service chair and they will upload it to the website.
 
 ### Staying Up to Date
@@ -39,8 +41,10 @@ Or, if you are using a service like [Netlify](https://www.netlify.com), you can 
 1. Re-run `yarn` in case dependencies were updated.
 
 ## TODO
+
 - set npm pkg name and version programmatically
 - https://docs.sentry.io/product/cli/releases/#creating-releases
+
 ### Contributing
 
 1. Create an issue that describes the problem you are solving. Screenshots are helpful.
