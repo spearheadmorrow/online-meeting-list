@@ -19,9 +19,9 @@ export function load(data: any): State {
   let formats: string[] = [];
   let types: string[] = [];
 
-  if (!import.meta.env.VITE_JSON_URL) {
-    data = translateGoogleSheet(data);
-  }
+  // We only support a bundled JSON feed now. Log for debugging.
+  // eslint-disable-next-line no-console
+  console.log('[data] Using JSON feed (bundled)');
 
   for (let i = 0; i < data.length; i++) {
     const meeting: Meeting = {
@@ -187,20 +187,7 @@ function stringToTrimmedArray(str: string, sep = ','): string[] {
     .filter(val => val);
 }
 
-function translateGoogleSheet(data: any) {
-  const { values } = data;
-  if (!values || !values.length) return [];
-  const headers = values
-    .shift()
-    .map((header: string) => header.toLowerCase().replace(' ', '_'));
-  return values.map((row: string[]) => {
-    const thisRow: any = {};
-    headers.forEach((header: string, index: number) => {
-      thisRow[header] = row[index];
-    });
-    return thisRow;
-  });
-}
+// Google Sheets support removed — data is expected to be a JSON array.
 
 function validateEmail(email: string) {
   return /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(

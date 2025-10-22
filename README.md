@@ -4,7 +4,7 @@ A small, fast React + TypeScript app for listing online recovery meetings. Built
 
 ## Main Points
 
-- Data source: Google Sheets (default) or a JSON feed
+- Data source: bundled JSON feed (public/meetings.json) or an external JSON feed via VITE_JSON_URL
 - Dev: pnpm, Vite (dev server + HMR)
 - Deploy: build static `dist/` files (CI workflow included for S3 + CloudFront)
 
@@ -19,8 +19,7 @@ pnpm install
 2. Create a `.env` file at the repo root (or set environment variables in your host). Common keys:
 
 ```
-VITE_GOOGLE_SHEET    # optional - Google Sheet URL to read meetings from
-VITE_GOOGLE_API_KEY  # required if using Google Sheets API
+VITE_JSON_URL        # optional - use an external JSON feed instead of the bundled one
 VITE_JSON_URL        # optional - use a JSON feed instead of Google Sheets
 VITE_SENTRY_DSN_URL  # optional - sentry DSN for error reporting
 VITE_PACKAGE_NAME    # optional - used for release tagging
@@ -70,24 +69,19 @@ If you need help mirroring a different meetings source or adapting the feed form
 
 ### Link Your Data
 
-_Note: The meeting finder is integrated with Sentry.io for error reporting. Sign up for an account on their website and generate a unique DSN URL. You will need it in the step, where you create your environment variables._
-
-1. Get an API Key from the [Google Developers Console](https://console.cloud.google.com) with the Sheets API enabled
-1. Make a copy of [this Google Sheet](https://docs.google.com/spreadsheets/d/1wER2LP3dT_6_LEQ8fSY1rv2bGzIZ2aaMBi_0Bt1aN3I/edit#gid=0)
-1. Open your spreadsheet and set the visibility to "anyone with the link can view"
-1. Add environment variables. One option is to create a file called `.env` in your root folder, and add your spreadsheet's URL (when you're in edit mode, not the URL displayed when you publish it to the web):
+The application now relies on a JSON feed. By default the app uses the bundled `public/meetings.json` which is copied to the build assets. If you prefer an external JSON feed, set the following environment variable in your build environment or `.env` file:
 
 ```
-VITE_GOOGLE_SHEET="add URL to your Google Sheet here"
-VITE_GOOGLE_API_KEY="add key here"
-VITE_SENTRY_DSN_URL="add your Sentry URL here"
-VITE_PACKAGE_NAME="copy from your package.json file"
-VITE_PACKAGE_VERSION="copy from your package.json file"
+VITE_JSON_URL="https://your-website.org/meetings.json"
 ```
 
-1. The last two variables are needed to tag your release in Sentry.
+The JSON must be an array of meeting objects matching the schema shown below. Sentry and release tagging environment variables (optional) are still supported:
 
-Or, if you are using a service like [Netlify](https://www.netlify.com), you can skip that step and add these variables directly to your build settings.
+```
+VITE_SENTRY_DSN_URL  # optional - sentry DSN for error reporting
+VITE_PACKAGE_NAME    # optional - used for release tagging
+VITE_PACKAGE_VERSION # optional - used for release tagging
+```
 
 ### Install and Run Locally
 
@@ -121,13 +115,7 @@ Or, if you are using a service like [Netlify](https://www.netlify.com), you can 
 
 ### Managing Data
 
-The data for the demo in managed in [this Google Sheet](https://docs.google.com/spreadsheets/d/1wER2LP3dT_6_LEQ8fSY1rv2bGzIZ2aaMBi_0Bt1aN3I/edit#gid=0). Some notes:
-
-- It's helpful to use the `Format > Clear Formatting` command, since styling doesn't carry over to the app.
-- It's a good practice to remove the meeting times and phone numbers from the Notes column, this prevents the inevitable scenario where it gets updated in one place but not another
-- The Timezone column is necessary because time zones don't stay in sync due to daylight savings. Best to store them in their local time and allow the app to translate them for the user on the fly.
-- Use soft returns (control-return on a Mac) to separate times in the Times column and indicate paragraph breaks in the Notes column
-- In cases where the format or types vary between times of the same meeting, that can either be mentioned in the Notes column, or separate entries could be created. For example, if the Friday night ocurrence of a weekly meeting is Women-only, then it's probably best to create a new row for just that Friday meeting.
+The app expects a JSON array of meeting objects (see the "JSON Feed Alternative" section below). Keep times in a consistent timezone and avoid putting times inside the free-text Notes field when possible.
 
 ### JSON Feed Alternative
 
