@@ -1,61 +1,76 @@
 name: Build and deploy Pages
 
 on:
-    push:
-        branches: [main, master]
-    workflow_dispatch:
-        inputs:
-            ref:
-                description: "Branch or tag to build (defaults to the workflow ref)"
-                required: false
-                default: "main"
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch or tag to build (defaults to the workflow ref)"
+        required: false
+        default: "main"
+      use_google_sheet:
+        description: "Build using Google Sheet? true|false (overrides default)"
+        required: false
+        default: "false"
 
 jobs:
-    build-and-deploy:
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            pages: write
-            id-token: write
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    # Ensure the build uses the JSON feed by default; this prevents
+    # accidentally building the site to use Google Sheets unless explicitly requested.
+    env:
+      VITE_USE_GOOGLE_SHEET: "false"
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                  # Use the manually provided ref when the workflow is triggered via workflow_dispatch
-                  ref: ${{ github.event.inputs.ref || github.ref }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Use the manually provided ref when the workflow is triggered via workflow_dispatch
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
-            - name: Use Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20"
+      - name: Print resolved data URL
+        run: |
+          echo "--- Effective data URL ---"
+          # export the manual override into the job env for the script
+          export VITE_USE_GOOGLE_SHEET=${{ github.event.inputs.use_google_sheet || env.VITE_USE_GOOGLE_SHEET }}
+          node scripts/print-data-url.js
 
-            - name: Setup pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 9
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-            - name: Verify pnpm
-              run: pnpm -v
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
 
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+      - name: Verify pnpm
+        run: pnpm -v
 
-            - name: Build (production)
-              run: pnpm run build:gh
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-            - name: Upload Pages build
-              uses: actions/upload-pages-artifact@v4
-              with:
-                  path: build/online-meeting-list
+      - name: Build (production)
+        run: pnpm run build:gh
 
-    deploy:
-        needs: build-and-deploy
-        runs-on: ubuntu-latest
-        permissions:
-            pages: write
-            id-token: write
+      - name: Upload Pages build
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/online-meeting-list
 
-        steps:
-            - name: Deploy to GitHub Pages
-              uses: actions/deploy-pages@v4
+  deploy:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
