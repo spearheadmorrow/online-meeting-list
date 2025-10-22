@@ -9,18 +9,11 @@ on:
         description: "Branch or tag to build (defaults to the workflow ref)"
         required: false
         default: "main"
-      use_google_sheet:
-        description: "Build using Google Sheet? true|false (overrides default)"
-        required: false
-        default: "false"
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    # Ensure the build uses the JSON feed by default; this prevents
-    # accidentally building the site to use Google Sheets unless explicitly requested.
-    env:
-      VITE_USE_GOOGLE_SHEET: "false"
+    # Build uses the bundled JSON feed by default.
     permissions:
       contents: read
       pages: write
@@ -33,12 +26,7 @@ jobs:
           # Use the manually provided ref when the workflow is triggered via workflow_dispatch
           ref: ${{ github.event.inputs.ref || github.ref }}
 
-      - name: Print resolved data URL
-        run: |
-          echo "--- Effective data URL ---"
-          # export the manual override into the job env for the script
-          export VITE_USE_GOOGLE_SHEET=${{ github.event.inputs.use_google_sheet || env.VITE_USE_GOOGLE_SHEET }}
-          node scripts/print-data-url.js
+      # No data-audit script necessary; the app bundles `public/meetings.json`.
 
       - name: Use Node.js
         uses: actions/setup-node@v4

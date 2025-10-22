@@ -16,7 +16,6 @@ const normalizeJoin = (base: string, path: string) => {
 
 // Decide how to source data:
 // - Default: use a static JSON feed (VITE_JSON_URL or ./assets/meetings.json)
-// - Only use Google Sheets when VITE_USE_GOOGLE_SHEET === 'true' and VITE_GOOGLE_SHEET is provided
 const provided = import.meta.env.VITE_JSON_URL;
 const base = import.meta.env.BASE_URL || '/';
 
@@ -28,27 +27,7 @@ const computeJsonUrl = (p?: string) => {
   return normalizeJoin(base, p);
 };
 
-const useGoogle =
-  (import.meta.env.VITE_USE_GOOGLE_SHEET || '').toLowerCase() === 'true' &&
-  Boolean(import.meta.env.VITE_GOOGLE_SHEET) &&
-  Boolean(import.meta.env.VITE_GOOGLE_API_KEY);
-
-const googleJsonUrl = () => {
-  const sheet = import.meta.env.VITE_GOOGLE_SHEET as string;
-  const key = import.meta.env.VITE_GOOGLE_API_KEY as string;
-  if (!sheet || !key) return null;
-  const id = sheet.split('/')[5];
-  if (!id) return null;
-  return `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/A:ZZ?key=${key}`;
-};
-
 export const dataUrl = (() => {
-  if (useGoogle) {
-    const g = googleJsonUrl();
-    if (g) return g;
-    // fall through to JSON if sheet parsing failed
-  }
-
   if (provided) return computeJsonUrl(provided);
 
   return computeJsonUrl();
