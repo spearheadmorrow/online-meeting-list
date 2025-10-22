@@ -20,8 +20,16 @@ jobs:
                   node-version: "18"
                   cache: "pnpm"
 
-            - name: Install pnpm
-              run: corepack enable && corepack prepare pnpm@latest --activate
+            - name: Enable pnpm via corepack
+              run: corepack enable
+
+            - name: Cache pnpm store
+              uses: actions/cache@v4
+              with:
+                  path: ~/.pnpm-store
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
@@ -40,3 +48,58 @@ jobs:
                   destination_dir: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || '' }}
                   user_name: github-actions[bot]
                   user_email: 41898282+github-actions[bot]@users.noreply.github.com
+
+            - name: Verify dist exists
+              run: |
+                  if [ ! -f ./dist/index.html ]; then
+                    echo "ERROR: ./dist/index.html not found" >&2
+                    ls -la ./dist || true
+                    exit 1
+                  fi
+
+            - name: Set preview URL (PR)
+              if: github.event_name == 'pull_request'
+              run: |
+                  owner=${GITHUB_REPOSITORY%%/*}
+                  repo=${GITHUB_REPOSITORY#*/}
+                  pr=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+                  preview="https://${owner}.github.io/${repo}/pr-${pr}/"
+                  echo "PREVIEW_URL=${preview}" >> $GITHUB_ENV
+
+            - name: Smoke test preview URL
+              if: github.event_name == 'pull_request'
+              run: |
+                  if [ -z "${PREVIEW_URL}" ]; then
+                    echo "PREVIEW_URL not set" >&2
+                    exit 1
+                  fi
+                  echo "Testing ${PREVIEW_URL}"
+                  # retry up to 10 times with increasing delay
+                  ok=false
+                  for i in 1 2 3 4 5 6 7 8 9 10; do
+                    if curl --silent --show-error --fail --max-time 10 "${PREVIEW_URL}" > /dev/null; then
+                      ok=true
+                      break
+                    fi
+                    echo "Attempt ${i} failed, sleeping..."
+                    sleep $((i * 2))
+                  done
+                  if [ "${ok}" != "true" ]; then
+                    echo "Preview URL did not respond with HTTP 200 within timeout" >&2
+                    exit 1
+                  fi
+
+            - name: Comment PR with preview URL, commit and build time
+              if: github.event_name == 'pull_request'
+              uses: actions/github-script@v6
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                      const owner = context.repo.owner;
+                      const repo = context.repo.repo;
+                      const pr = context.payload.pull_request.number;
+                      const preview = process.env.PREVIEW_URL || `https://${owner}.github.io/${repo}/pr-${pr}/`;
+                      const sha = process.env.GITHUB_SHA || context.sha;
+                      const buildTime = new Date().toISOString();
+                      const body = `Preview available: ${preview}\n\nCommit: ${sha}\nBuilt: ${buildTime}`;
+                      await github.rest.issues.createComment({ owner, repo, issue_number: pr, body });
