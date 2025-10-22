@@ -30,8 +30,13 @@ jobs:
               with:
                   node-version: "20"
 
-            - name: Enable Corepack (pnpm)
-              run: corepack enable
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+
+            - name: Verify pnpm
+              run: pnpm -v
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
@@ -40,7 +45,7 @@ jobs:
               run: pnpm run build:gh
 
             - name: Upload Pages build
-              uses: actions/upload-pages-artifact@v1
+              uses: actions/upload-pages-artifact@v4
               with:
                   path: build/online-meeting-list
 
@@ -53,4 +58,4 @@ jobs:
 
         steps:
             - name: Deploy to GitHub Pages
-              uses: actions/deploy-pages@v1
+              uses: actions/deploy-pages@v4
