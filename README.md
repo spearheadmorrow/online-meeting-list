@@ -60,6 +60,12 @@ pnpm preview
 
 If you need help mirroring a different meetings source or adapting the feed format, open an issue with a sample payload and expected behavior.
 
+## Preview deploys (GitHub Pages)
+
+- This repository includes an Action that builds the app and publishes `dist/` to the `gh-pages` branch.
+- For pushes to `main`, the site is published at the repository root. For pull requests the workflow publishes the build under `gh-pages/pr-<number>` so you can preview changes per-PR.
+- To enable GitHub Pages: go to the repository Settings → Pages and set the source to the `gh-pages` branch (root). The Action will populate that branch automatically.
+
 ## How to Set Up Your Local Development Environment
 
 ### Link Your Data
