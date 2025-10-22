@@ -1,8 +1,32 @@
 {
-  "name": "oiaa",
-  "version": "1.0.0",
+  "name": "online-meeting-list",
+  "version": "2.0.0",
   "homepage": "https://swenglish.info/online",
-  "private": true,
+  "author": "spearheadmorrow",
+  "contributors": [
+    {
+      "name": "spearheadmorrow",
+      "url": "https://github.com/spearheadmorrow"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spearheadmorrow/online-meeting-list.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spearheadmorrow/online-meeting-list/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "online",
+    "meetings",
+    "schedule",
+    "community"
+  ],
+  "funding": {
+    "url": "https://github.com/sponsors/spearheadmorrow"
+  },
+  "private": false,
   "dependencies": {
     "@sentry/react": "^6.13.3",
     "@sentry/tracing": "^6.13.3",
