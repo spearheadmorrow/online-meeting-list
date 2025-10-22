@@ -8,8 +8,8 @@ import { Filter } from './components/Filter';
 import { Loading } from './components/Loading';
 import { Meeting } from './components/Meeting';
 import type { Meeting as MeetingType } from './components/Meeting';
-// InfiniteScroll's types sometimes conflict with our React types; cast below where used.
-import { NoResults } from './components/NoResults';
+
+import { Results } from './components/Results';
 import {
   dataUrl,
   sentryDsnUrl,
@@ -100,13 +100,19 @@ export default function App() {
       {state.loading ? (
         <Loading />
       ) : (
-        <Box as="main" maxW={1240} minH="100%" mx="auto" p={{ xs: 3, md: 6 }}>
+        <Box
+          as="main"
+          maxW="1240px"
+          minH="100%"
+          mx="auto"
+          p={{ base: 3, md: 6 }}
+        >
           <Grid
             as="section"
-            gap={{ xs: 3, md: 6 }}
-            templateColumns={{ md: 'auto 300px' }}
+            gap={{ base: 3, md: 6 }}
+            templateColumns={{ base: '1fr', md: '1fr 300px' }}
           >
-            <Box as="section" order={{ xs: 1, md: 2 }}>
+            <Box as="section" order={{ base: 1, md: 2 }}>
               <Filter
                 setSearch={(search: string[]) => {
                   setState({ ...state, search });
@@ -118,30 +124,48 @@ export default function App() {
                 toggleTag={toggleTag}
               />
             </Box>
-            <Box order={{ xs: 2, md: 1 }} overflow="hidden">
-              {!filteredMeetings.length && (
-                <NoResults state={state} toggleTag={toggleTag} />
-              )}
-              {!!filteredMeetings.length && (
-                <InfiniteScrollAny
-                  loadMore={() => {
-                    const limit = state.limit + meetingsPerPage;
-                    setState({ ...state, limit });
-                  }}
-                  hasMore={filteredMeetings.length > state.limit}
-                >
-                  {filteredMeetings
-                    .slice(0, state.limit)
-                    .map((meeting: MeetingType, index: number) => (
-                      <Meeting
-                        key={index}
-                        meeting={meeting}
-                        search={state.search}
-                        tags={tags}
-                      />
-                    ))}
-                </InfiniteScrollAny>
-              )}
+            <Box
+              order={{ base: 2, md: 1 }}
+              display="flex"
+              flexDirection="column"
+              minH="60vh"
+            >
+              {/* Thin header for NoResults */}
+              <Box
+                flex="0 0 auto"
+                height="72px"
+                display="flex"
+                alignItems="center"
+              >
+                <Results
+                  count={filteredMeetings.length}
+                  state={state}
+                  toggleTag={toggleTag}
+                />
+              </Box>
+              {/* Scrollable list area */}
+              <Box flex="1 1 auto" overflowY="auto">
+                {!!filteredMeetings.length && (
+                  <InfiniteScrollAny
+                    loadMore={() => {
+                      const limit = state.limit + meetingsPerPage;
+                      setState({ ...state, limit });
+                    }}
+                    hasMore={filteredMeetings.length > state.limit}
+                  >
+                    {filteredMeetings
+                      .slice(0, state.limit)
+                      .map((meeting: MeetingType, index: number) => (
+                        <Meeting
+                          key={index}
+                          meeting={meeting}
+                          search={state.search}
+                          tags={tags}
+                        />
+                      ))}
+                  </InfiniteScrollAny>
+                )}
+              </Box>
             </Box>
           </Grid>
         </Box>
