@@ -7,7 +7,6 @@ const path = require('path');
 
 const subpath = process.argv[2] || '/online-meeting-list';
 const port = parseInt(process.argv[3], 10) || 5000;
-
 let buildDir = path.join(__dirname, '..', 'build');
 const ghPagesSubdir = path.join(buildDir, 'online-meeting-list');
 if (fs.existsSync(ghPagesSubdir)) {
