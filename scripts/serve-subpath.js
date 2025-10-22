@@ -64,7 +64,6 @@ const server = http.createServer((req, res) => {
         sendFile(res, filePath);
         return;
       }
-
       const index = path.join(buildDir, 'index.html');
       fs.stat(index, (iErr, iStats) => {
         if (!iErr && iStats.isFile()) {
