@@ -2,7 +2,6 @@ export const environment = 'production';
 export const releasePkgInfo = `${import.meta.env.VITE_PACKAGE_NAME}@${
   import.meta.env.VITE_PACKAGE_VERSION
 }`;
-export const sentryDsnUrl = import.meta.env.VITE_SENTRY_DSN_URL;
 
 const sheetUrl = import.meta.env.VITE_GOOGLE_SHEET
   ? import.meta.env.VITE_GOOGLE_SHEET
