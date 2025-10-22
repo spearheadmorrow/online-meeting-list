@@ -3,10 +3,6 @@ export const releasePkgInfo = `${import.meta.env.VITE_PACKAGE_NAME}@${
   import.meta.env.VITE_PACKAGE_VERSION
 }`;
 
-const sheetUrl = import.meta.env.VITE_GOOGLE_SHEET
-  ? import.meta.env.VITE_GOOGLE_SHEET
-  : 'https://docs.google.com/spreadsheets/d/1wER2LP3dT_6_LEQ8fSY1rv2bGzIZ2aaMBi_0Bt1aN3I/edit#gid=0';
-
 const normalizeJoin = (base: string, path: string) => {
   if (!base) return path;
   // If path is absolute URL, return as-is
@@ -18,21 +14,44 @@ const normalizeJoin = (base: string, path: string) => {
   return base + path;
 };
 
-const defaultJsonUrl = `https://sheets.googleapis.com/v4/spreadsheets/${
-  sheetUrl.split('/')[5]
-}/values/A:ZZ?key=${import.meta.env.VITE_GOOGLE_API_KEY}`;
+// Decide how to source data:
+// - Default: use a static JSON feed (VITE_JSON_URL or ./assets/meetings.json)
+// - Only use Google Sheets when VITE_USE_GOOGLE_SHEET === 'true' and VITE_GOOGLE_SHEET is provided
+const provided = import.meta.env.VITE_JSON_URL;
+const base = import.meta.env.BASE_URL || '/';
+
+const jsonFallback = './assets/meetings.json';
+
+const computeJsonUrl = (p?: string) => {
+  if (!p) p = jsonFallback;
+  if (/^(https?:)?\/\//.test(p)) return p;
+  return normalizeJoin(base, p);
+};
+
+const useGoogle =
+  (import.meta.env.VITE_USE_GOOGLE_SHEET || '').toLowerCase() === 'true' &&
+  Boolean(import.meta.env.VITE_GOOGLE_SHEET) &&
+  Boolean(import.meta.env.VITE_GOOGLE_API_KEY);
+
+const googleJsonUrl = () => {
+  const sheet = import.meta.env.VITE_GOOGLE_SHEET as string;
+  const key = import.meta.env.VITE_GOOGLE_API_KEY as string;
+  if (!sheet || !key) return null;
+  const id = sheet.split('/')[5];
+  if (!id) return null;
+  return `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/A:ZZ?key=${key}`;
+};
 
 export const dataUrl = (() => {
-  const provided = import.meta.env.VITE_JSON_URL;
-  if (provided) {
-    // If provided is absolute (starts with /), treat it as relative to base
-    // If provided is a full URL (http/https) return as-is
-    if (/^(https?:)?\/\//.test(provided)) return provided;
-    // Use Vite's BASE_URL (import.meta.env.BASE_URL) which is '/' or the configured base
-    const base = import.meta.env.BASE_URL || '/';
-    return normalizeJoin(base, provided);
+  if (useGoogle) {
+    const g = googleJsonUrl();
+    if (g) return g;
+    // fall through to JSON if sheet parsing failed
   }
-  return defaultJsonUrl;
+
+  if (provided) return computeJsonUrl(provided);
+
+  return computeJsonUrl();
 })();
 
 export const days = [
