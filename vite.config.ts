@@ -20,16 +20,18 @@ const copyPublicData = (): Plugin => {
         if (!fs.existsSync(src)) return;
 
         // Use fs.promises.cp when available (Node 16.7+), otherwise fall back to manual copy
-        // Ensure assets dir exists
+        // Ensure assets dir exists and copy file there only
         await fs.promises.mkdir(assetsDir, { recursive: true });
         const dest = path.join(assetsDir, 'meetings.json');
-        // Prefer fs.cp when available
-        if ((fs as any).promises && (fs as any).promises.cp) {
-          (await (fs as any).promises.copyFile)
-            ? fs.promises.copyFile(src, dest)
-            : (fs as any).promises.cp(src, dest);
-        } else {
-          await fs.promises.copyFile(src, dest);
+        // Copy the single file into build/assets
+        await fs.promises.copyFile(src, dest);
+
+        // Remove any accidental copy at build/meetings.json to avoid duplicate requests
+        const rootCopy = path.join(projectRoot, 'build', 'meetings.json');
+        try {
+          await fs.promises.rm(rootCopy, { force: true });
+        } catch (e) {
+          // ignore
         }
       } catch (err) {
         // Don't fail the build for copy errors; log for debugging

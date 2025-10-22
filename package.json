@@ -58,7 +58,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "node scripts/serve-subpath.js /online-meeting-list 5000",
     "test": "echo \"No tests configured for Vite migration.\" && exit 0",
     "build:gh": "vite build --base /online-meeting-list/ && mkdir -p build/online-meeting-list && for p in build/*; do if [ \"$p\" = \"build/online-meeting-list\" ]; then continue; fi; mv \"$p\" build/online-meeting-list/; done",
     "predeploy": "pnpm build:gh",

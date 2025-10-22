@@ -7,7 +7,13 @@ const path = require('path');
 
 const subpath = process.argv[2] || '/online-meeting-list';
 const port = parseInt(process.argv[3], 10) || 5000;
-const buildDir = path.join(__dirname, '..', 'build');
+// The build script (build:gh) moves files under build/online-meeting-list.
+// If that folder exists, use it as the served build directory. Otherwise use build/.
+let buildDir = path.join(__dirname, '..', 'build');
+const ghPagesSubdir = path.join(buildDir, 'online-meeting-list');
+if (fs.existsSync(ghPagesSubdir)) {
+  buildDir = ghPagesSubdir;
+}
 
 const mime = {
   '.html': 'text/html; charset=utf-8',
@@ -79,6 +85,26 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(port, () => {
-  console.log(`Serving ${buildDir} at http://localhost:${port}${subpath}`);
-});
+const tryListen = (p, attemptsLeft) => {
+  server.listen(p, () => {
+    console.log(`Serving ${buildDir} at http://localhost:${p}${subpath}`);
+  });
+
+  server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE' && attemptsLeft > 0) {
+      // try next port
+      const next = p + 1;
+      // remove listeners and try again
+      server.removeAllListeners('error');
+      setTimeout(() => tryListen(next, attemptsLeft - 1), 100);
+    } else {
+      // final error
+      // eslint-disable-next-line no-console
+      console.error('Server failed to start:', err);
+      process.exit(1);
+    }
+  });
+};
+
+// Try up to 10 ports starting from requested port
+tryListen(port, 10);
