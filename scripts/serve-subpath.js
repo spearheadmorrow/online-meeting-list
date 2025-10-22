@@ -7,8 +7,6 @@ const path = require('path');
 
 const subpath = process.argv[2] || '/online-meeting-list';
 const port = parseInt(process.argv[3], 10) || 5000;
-// The build script (build:gh) moves files under build/online-meeting-list.
-// If that folder exists, use it as the served build directory. Otherwise use build/.
 let buildDir = path.join(__dirname, '..', 'build');
 const ghPagesSubdir = path.join(buildDir, 'online-meeting-list');
 if (fs.existsSync(ghPagesSubdir)) {
@@ -51,12 +49,10 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    // Map request to file under buildDir
     let rel = url.slice(subpath.length);
     if (!rel || rel === '/') rel = '/index.html';
     const filePath = path.join(buildDir, rel);
 
-    // Prevent path traversal
     if (!filePath.startsWith(buildDir)) {
       res.statusCode = 403;
       res.end('Forbidden');
@@ -68,7 +64,7 @@ const server = http.createServer((req, res) => {
         sendFile(res, filePath);
         return;
       }
-      // SPA fallback: serve index.html for missing files under subpath
+
       const index = path.join(buildDir, 'index.html');
       fs.stat(index, (iErr, iStats) => {
         if (!iErr && iStats.isFile()) {
@@ -90,15 +86,13 @@ const tryListen = (p, attemptsLeft) => {
     console.log(`Serving ${buildDir} at http://localhost:${p}${subpath}`);
   });
 
-  server.on('error', (err) => {
+  server.on('error', err => {
     if (err && err.code === 'EADDRINUSE' && attemptsLeft > 0) {
-      // try next port
       const next = p + 1;
-      // remove listeners and try again
+
       server.removeAllListeners('error');
       setTimeout(() => tryListen(next, attemptsLeft - 1), 100);
     } else {
-      // final error
       // eslint-disable-next-line no-console
       console.error('Server failed to start:', err);
       process.exit(1);
@@ -106,5 +100,4 @@ const tryListen = (p, attemptsLeft) => {
   });
 };
 
-// Try up to 10 ports starting from requested port
 tryListen(port, 10);
