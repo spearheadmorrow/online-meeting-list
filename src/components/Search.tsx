@@ -1,12 +1,12 @@
 import React, { ChangeEvent, useRef } from 'react';
 import {
-  Icon,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
   InputRightElement
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
+import { SearchIcon, CloseIcon } from '@chakra-ui/icons';
 
 type Search = {
   setSearch: (search: string[]) => void;
@@ -18,7 +18,7 @@ export function Search({ search, setSearch }: Search) {
   return (
     <InputGroup borderColor="gray.300">
       <InputLeftElement>
-        <Icon color="gray.300" name="search-2" />
+        <SearchIcon color="gray.300" />
       </InputLeftElement>
       <Input
         aria-label="Search"
@@ -39,7 +39,7 @@ export function Search({ search, setSearch }: Search) {
             aria-label="Clear search"
             bg="transparent"
             color="gray.300"
-            icon="small-close"
+            icon={<CloseIcon />}
             _active={{ bg: 'transparent', color: 'gray.500' }}
             _hover={{ bg: 'transparent', color: 'gray.500' }}
             onClick={() => {
@@ -49,7 +49,7 @@ export function Search({ search, setSearch }: Search) {
                 searchField.current.focus();
               }
             }}
-          ></IconButton>
+          />
         </InputRightElement>
       )}
     </InputGroup>

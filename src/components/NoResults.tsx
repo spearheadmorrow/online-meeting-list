@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Box, Stack } from '@chakra-ui/core';
+import { Alert, Box, Stack } from '@chakra-ui/react';
 
 import { ButtonPrimary } from './ButtonPrimary';
 import { State } from '../helpers/data';
@@ -19,18 +19,15 @@ export function NoResults({ state, toggleTag }: NoResults) {
     )
     .flat();
   return (
-    <Alert flexDirection="column" py={60} rounded="md">
+    <Alert flexDirection="column" py={60} borderRadius="md">
       <Stack spacing={5} align="center">
         <Box>No results match the selected filters:</Box>
         {filters.map(([filter, tag], index) => (
-          <Box>
+          <Box key={index}>
             <ButtonPrimary
-              key={index}
               icon="small-close"
-              onClick={() => {
-                toggleTag(filter, tag, false);
-              }}
-              text={tag}
+              onClick={() => toggleTag(filter, tag, false)}
+              text={tag as string}
             />
           </Box>
         ))}

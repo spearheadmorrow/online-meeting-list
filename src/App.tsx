@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
-import { Box, CSSReset, Grid, ThemeProvider, theme } from '@chakra-ui/core';
+import { Box, Grid, ChakraProvider, extendTheme } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroller';
-import * as Sentry from "@sentry/react";
-import { Integrations } from "@sentry/tracing";
+import * as Sentry from '@sentry/react';
+import { Integrations } from '@sentry/tracing';
 
 import { Filter } from './components/Filter';
 import { Loading } from './components/Loading';
 import { Meeting } from './components/Meeting';
+import type { Meeting as MeetingType } from './components/Meeting';
+// InfiniteScroll's types sometimes conflict with our React types; cast below where used.
 import { NoResults } from './components/NoResults';
-import { dataUrl, sentryDsnUrl, meetingsPerPage, releasePkgInfo as release, environment } from './helpers/config';
+import {
+  dataUrl,
+  sentryDsnUrl,
+  meetingsPerPage,
+  releasePkgInfo as release,
+  environment
+} from './helpers/config';
 import { load, State } from './helpers/data';
 import { filter } from './helpers/filter';
 import { setQuery } from './helpers/query';
@@ -18,8 +26,10 @@ Sentry.init({
   environment,
   dsn: sentryDsnUrl,
   integrations: [new Integrations.BrowserTracing()],
-  tracesSampleRate: 0.7,
+  tracesSampleRate: 0.7
 });
+
+const InfiniteScrollAny = InfiniteScroll as unknown as any;
 
 export default function App() {
   const [state, setState] = useState<State>({
@@ -36,18 +46,15 @@ export default function App() {
     timezone: ''
   });
 
-  //function to remove a tag
   const toggleTag = (filter: string, value: string, checked: boolean): void => {
-    //loop through and add the tag
     state.filters[filter].forEach(tag => {
       if (tag.tag === value) {
         tag.checked = checked;
       } else if (['days', 'formats'].includes(filter)) {
-        //if we're setting a tag or format, uncheck the others
         tag.checked = false;
       }
     });
-    //this will cause a re-render; the actual filtering is done in filterData
+
     setState({ ...state });
   };
 
@@ -57,14 +64,13 @@ export default function App() {
       .then(result => {
         setState(load(result));
       })
-      .catch(error =>  {
+      .catch(error => {
         Sentry.captureException(error);
       });
   } else {
     setQuery(state);
   }
 
-  //get currently-checked tags
   const tags: string[] = Object.keys(state.filters)
     .map(filter => {
       return state.filters[filter]
@@ -75,24 +81,22 @@ export default function App() {
 
   const filteredMeetings = filter(state, tags);
 
-  const customTheme = {
-    ...theme,
+  const customTheme = extendTheme({
     icons: {
-      ...theme.icons,
       video: {
         path: (
           <path
             fill="currentColor"
             d="M16 16c0 1.104-.896 2-2 2h-12c-1.104 0-2-.896-2-2v-8c0-1.104.896-2 2-2h12c1.104 0 2 .896 2 2v8zm8-10l-6 4.223v3.554l6 4.223v-12z"
           />
-        )
+        ),
+        viewBox: '0 0 32 32'
       }
     }
-  };
+  });
 
   return (
-    <ThemeProvider theme={customTheme}>
-      <CSSReset />
+    <ChakraProvider theme={customTheme}>
       {state.loading ? (
         <Loading />
       ) : (
@@ -119,7 +123,7 @@ export default function App() {
                 <NoResults state={state} toggleTag={toggleTag} />
               )}
               {!!filteredMeetings.length && (
-                <InfiniteScroll
+                <InfiniteScrollAny
                   loadMore={() => {
                     const limit = state.limit + meetingsPerPage;
                     setState({ ...state, limit });
@@ -128,7 +132,7 @@ export default function App() {
                 >
                   {filteredMeetings
                     .slice(0, state.limit)
-                    .map((meeting: Meeting, index: number) => (
+                    .map((meeting: MeetingType, index: number) => (
                       <Meeting
                         key={index}
                         meeting={meeting}
@@ -136,12 +140,12 @@ export default function App() {
                         tags={tags}
                       />
                     ))}
-                </InfiniteScroll>
+                </InfiniteScrollAny>
               )}
             </Box>
           </Grid>
         </Box>
       )}
-    </ThemeProvider>
+    </ChakraProvider>
   );
 }

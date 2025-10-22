@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
-import { Button, FormControl, Select, Stack } from '@chakra-ui/core';
+import { Button, FormControl, Select, Stack } from '@chakra-ui/react';
+import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import { ButtonTag } from './ButtonTag';
 import { Search } from './Search';
@@ -17,16 +18,13 @@ type Filter = {
 export function Filter({ setSearch, setTimezone, state, toggleTag }: Filter) {
   const [open, setOpen] = useState(false);
   return (
-    <Stack spacing={{ xs: 3, md: 6 }}>
-      <FormControl>
-        <Textual></Textual>
-      </FormControl>
+    <Stack spacing={{ base: 3, md: 6 }}>
       <FormControl>
         <Search search={state.search} setSearch={setSearch} />
       </FormControl>
       <Stack
-        d={{ xs: open ? 'block' : 'none', md: 'block' }}
-        spacing={{ xs: 3, md: 6 }}
+        display={{ base: open ? 'block' : 'none', md: 'block' }}
+        spacing={{ base: 3, md: 6 }}
       >
         {Object.keys(state.filters).map((filter: string, index: number) => (
           <FormControl key={index}>
@@ -40,12 +38,11 @@ export function Filter({ setSearch, setTimezone, state, toggleTag }: Filter) {
             ))}
           </FormControl>
         ))}
-        <FormControl d="block" as="fieldset">
+        <FormControl display="block" as="fieldset">
           <Select
             aria-label="Timezone"
             borderColor="gray.300"
-            icon="time"
-            iconSize={4}
+            // chakra Select uses a built-in icon; to customize you'd pass an Icon component via the icon prop
             onChange={(e: React.FormEvent<HTMLSelectElement>) =>
               setTimezone(e.currentTarget.value)
             }
@@ -57,14 +54,14 @@ export function Filter({ setSearch, setTimezone, state, toggleTag }: Filter) {
           </Select>
         </FormControl>
       </Stack>
-      <FormControl d={{ md: 'none' }}>
+      <FormControl display={{ md: 'none' }}>
         <Button
           bg={open ? 'gray.100' : 'white'}
           borderColor="gray.300"
           onClick={() => {
             setOpen(!open);
           }}
-          rightIcon={open ? 'chevron-up' : 'chevron-down'}
+          rightIcon={open ? <ChevronUpIcon /> : <ChevronDownIcon />}
           variant="outline"
           w="100%"
         >

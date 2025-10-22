@@ -1,8 +1,15 @@
 import React from 'react';
-import { Box, Heading, Stack, Text, Tag } from '@chakra-ui/core';
+import { Box, Heading, Stack, Text, Tag } from '@chakra-ui/react';
 import Highlighter from 'react-highlight-words';
+import { Highlight } from './Highlight';
 import { Moment } from 'moment-timezone';
 import Linkify from 'react-linkify';
+
+// react-highlight-words and react-linkify ship older React typings that can
+// be incompatible with our current @types/react. Cast them safely to any
+// React component type and use the aliases below.
+const HighlighterAny = Highlighter as unknown as React.ComponentType<any>;
+const LinkifyAny = Linkify as unknown as React.ComponentType<any>;
 
 import { ButtonPrimary, ButtonPrimaryProps } from './ButtonPrimary';
 
@@ -29,22 +36,22 @@ export function Meeting({
     <Box
       as="article"
       bg="white"
-      border="1px"
+      borderWidth="1px"
       borderColor="gray.300"
-      mb={{ xs: 3, md: 6 }}
+      mb={{ base: 3, md: 6 }}
       p={5}
-      rounded="md"
-      shadow="md"
+      borderRadius="md"
+      boxShadow="md"
     >
       <Stack spacing={3}>
         <Box alignItems="baseline">
-          <Heading as="h2" d={{ lg: 'inline' }} fontSize="2xl">
-            <Highlighter searchWords={search} textToHighlight={meeting.name} />
+          <Heading as="h2" display={{ lg: 'inline' }} fontSize="2xl">
+            <Highlight searchWords={search} textToHighlight={meeting.name} />
           </Heading>
           <Heading
             as="h3"
             color="gray.600"
-            d={{ lg: 'inline' }}
+            display={{ lg: 'inline' }}
             fontSize="lg"
             fontWeight="normal"
             ml={{ lg: 2 }}
@@ -55,7 +62,7 @@ export function Meeting({
         {!!meeting.buttons.length && (
           <Box>
             {meeting.buttons.map((button, index) => (
-              <Box float="left" mr={2} my={1} key={index}>
+              <Box key={index} float="left" mr={2} my={1}>
                 <ButtonPrimary {...button} />
               </Box>
             ))}
@@ -65,7 +72,7 @@ export function Meeting({
           <Stack spacing={3}>
             {meeting.notes.map((paragraph: string, key: number) => (
               <Text key={key}>
-                <Linkify>{paragraph}</Linkify>
+                {React.createElement(Linkify as any, null, paragraph)}
               </Text>
             ))}
           </Stack>
